@@ -243,6 +243,14 @@ impl<Q: BbqHandle> Drop for StreamGrantR<Q> {
 }
 
 impl<Q: BbqHandle> StreamGrantR<Q> {
+    pub fn mark_as_read(&mut self, used: usize) {
+        self.to_release = self.len.min(used);
+    }
+
+    pub fn truncate(&mut self, new_len: usize) {
+        self.len = self.len.min(new_len);
+    }
+
     pub fn release(self, used: usize) {
         let used = used.min(self.len);
         self.bbq.cor.release_inner(used);
